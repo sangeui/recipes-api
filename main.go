@@ -9,6 +9,8 @@ GET		/recipes/search?tag=X	Searches for recipes by tags
 */
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -44,12 +46,19 @@ func NewRecipeHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, recipe)
 }
 
-func init() {
-	recipes = make([]Recipe, 0)
+func ListRecipesHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, recipes)
 }
 
 func main() {
 	router := gin.Default()
 	router.POST("/recipes", NewRecipeHandler)
+	router.GET("/recipes", ListRecipesHandler)
 	router.Run()
+}
+
+func init() {
+	recipes = make([]Recipe, 0)
+	file, _ := ioutil.ReadFile("recipes.json")
+	_ = json.Unmarshal([]byte(file), &recipes)
 }
